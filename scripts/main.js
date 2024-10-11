@@ -57,7 +57,7 @@ const checkoutButton = document.getElementById("checkout-button");
 
 checkoutButton.addEventListener("click", () => {
   // Get the total amount from your cart
-  let totalAmount = 100; // You can replace this with the actual cart total
+  let totalAmount = $${total}; // You can replace this with the actual cart total
 
   // UPI Payment Deep Link
   const upiId = "7395996409@ybl"; // Replace with your actual UPI ID
