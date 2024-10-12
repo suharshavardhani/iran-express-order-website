@@ -1,33 +1,75 @@
-
+// Function to display the menu
 const displayMenu = () => {
   const menuContainer = document.getElementById("menu-items");
-  
+  menuContainer.innerHTML = ""; // Clear menu container
+
   menu.forEach(item => {
     const menuItem = document.createElement("div");
     menuItem.classList.add("menu-item");
     menuItem.innerHTML = `
-      <h3>${item.name}</h3>
-      <p>Category: ${item.category}</p>
-      <p>Price: $${item.price}</p>
-      <button onclick="addToCart(${item.id})">Add to Cart</button>
+      <div class="menu-details">
+        <h3>${item.name}</h3>
+        <p>Category: ${item.category}</p>
+        <p>Price: ${item.price}/-</p>
+      </div>
+      <div class="menu-image">
+        <img src="${item.img}" alt="${item.name}" />
+        <div class="quantity-selector">
+          <button class="quantity-btn" onclick="increaseQuantity(${item.id})">Add</button>
+          <input type="text" id="quantity-${item.id}" value="0" readonly />
+          <button class="quantity-btn" onclick="decreaseQuantity(${item.id})">Remove</button>
+        </div>
+      </div>
     `;
     menuContainer.appendChild(menuItem);
   });
 };
 
-// Call the displayMenu function when the page loads
-window.onload = () => {
-  displayMenu();
-};
 
-
+// Cart structure with quantities
 let cart = [];
 
-// Function to add items to the cart
-const addToCart = (id) => {
+// Function to increase quantity of an item
+const increaseQuantity = (id) => {
   const item = menu.find(menuItem => menuItem.id === id);
-  cart.push(item);
+  const input = document.getElementById(`quantity-${id}`);
+  let currentQuantity = parseInt(input.value);
+
+  // Update the quantity in the input field
+  input.value = ++currentQuantity;
+
+  // Add item to cart or update quantity in cart
+  const cartItem = cart.find(cartItem => cartItem.id === id);
+  if (cartItem) {
+    cartItem.quantity = currentQuantity;
+  } else {
+    cart.push({ ...item, quantity: currentQuantity });
+  }
+
+  // Update the cart display
   displayCart();
+};
+
+// Function to decrease quantity of an item
+const decreaseQuantity = (id) => {
+  const input = document.getElementById(`quantity-${id}`);
+  let currentQuantity = parseInt(input.value);
+
+  if (currentQuantity > 0) {
+    input.value = --currentQuantity;
+
+    // Update cart quantity or remove if zero
+    const cartItem = cart.find(cartItem => cartItem.id === id);
+    if (cartItem) {
+      cartItem.quantity = currentQuantity;
+      if (cartItem.quantity === 0) {
+        cart = cart.filter(item => item.id !== id); // Remove item from cart if quantity is 0
+      }
+    }
+
+    // Update the cart display
+    displayCart();
+  }
 };
 
 // Function to display cart
@@ -36,12 +78,14 @@ const displayCart = () => {
   orderSummary.innerHTML = "";
 
   let total = 0;
-  
+
   cart.forEach(item => {
-    total += item.price;
+    total += item.price * item.quantity;
+
     const cartItem = document.createElement("div");
+    cartItem.classList.add("cart-item");
     cartItem.innerHTML = `
-      <p>${item.name} - $${item.price}</p>
+      <p>${item.name} - ${item.price} x ${item.quantity}</p>
     `;
     orderSummary.appendChild(cartItem);
   });
@@ -52,14 +96,13 @@ const displayCart = () => {
   orderSummary.appendChild(totalDiv);
 };
 
-
+// Add UPI payment process (as before)
 const checkoutButton = document.getElementById("checkout-button");
 
 checkoutButton.addEventListener("click", () => {
-  // Get the total amount from your cart
-  let totalAmount = 10; // You can replace this with the actual cart total
+  // Calculate total amount
+  let totalAmount = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-  // UPI Payment Deep Link
   const upiId = "7395996409@ybl"; // Replace with your actual UPI ID
   const name = "Your Restaurant";
   const transactionId = "T123456";
@@ -73,3 +116,8 @@ checkoutButton.addEventListener("click", () => {
   // Redirect to UPI app
   window.location.href = upiUrl;
 });
+
+// Call the displayMenu function when the page loads
+window.onload = () => {
+  displayMenu();
+};
