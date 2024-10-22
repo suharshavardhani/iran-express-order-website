@@ -103,7 +103,7 @@ checkoutButton.addEventListener("click", () => {
   // Calculate total amount
   let totalAmount = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-  const upiId = "7395996409@ybl"; // Replace with your actual UPI ID
+  const upiId = "7395996409@yybl"; // Replace with your actual UPI ID
   const name = "Your Restaurant";
   const transactionId = "T123456";
   const note = "Order Payment";
