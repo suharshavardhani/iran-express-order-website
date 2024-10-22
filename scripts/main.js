@@ -287,5 +287,7 @@ window.onload = () => {
   }
 };
 
+//test
+
 // Your existing functions like menu rendering, cart management, etc.
 
